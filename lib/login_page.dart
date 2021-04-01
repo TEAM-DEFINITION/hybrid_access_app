@@ -33,7 +33,7 @@ class _LoginPageState extends State<LoginPage> {
     if(response.statusCode == 200){
       setState(() {
         print(response.body);
-        Navigator.push(context, MaterialPageRoute(builder: (context) => TabPage(data:"Value")));
+        Navigator.push(context, MaterialPageRoute(builder: (context) => TabPage(data:"로그인성공입니당~~"+_controller.text)));
       });
     } else{
       throw Exception("failed to load data");
