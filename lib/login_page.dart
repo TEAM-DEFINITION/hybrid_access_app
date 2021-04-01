@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
+import 'package:hybrid_access_app/tab_page.dart';
+
 class LoginPage extends StatefulWidget {
   @override
   _LoginPageState createState() => _LoginPageState();
@@ -9,6 +11,7 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
 
+  final TextEditingController _controller = TextEditingController();
   List data = [];
   bool isLoading = false;
 
@@ -16,7 +19,17 @@ class _LoginPageState extends State<LoginPage> {
     setState(() {
       isLoading = true;
     });
-    final response = await http.get(Uri.parse("http://112.156.0.196:55555/apptest"));
+    final response = await http.post(
+      Uri.parse("http://112.156.0.196:55555/apptest"),
+      headers: <String, String> {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: <String, String>{
+        'user_id' : _controller.text,
+        'user_pwd' : _controller.text,
+      }
+      ,
+    );
     if(response.statusCode == 200){
       setState(() {
         print(response.body);
@@ -25,6 +38,12 @@ class _LoginPageState extends State<LoginPage> {
       throw Exception("failed to load data");
 
     }
+  }
+
+  @override
+  void dispose(){
+    _controller.dispose();
+    super.dispose();
   }
 
   @override
@@ -42,39 +61,41 @@ class _LoginPageState extends State<LoginPage> {
           leading: Container(),
         ),
 
-        body: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children : <Widget>[
-            Center(
-              child:
-                TextFormField(
-                  decoration:
-                    InputDecoration(
-                      icon: Icon(Icons.account_circle),
-                      border: UnderlineInputBorder(),
-                      labelText: "이름 또는 아이디를 입력하세요",
-                    ),
-                ),
-            ),
-            Center(
-              child:
-                TextButton(
-                  child:
-                    Text("로그인"),
-                  style:
-                    TextButton.styleFrom(primary:Colors.blue),
-                  onPressed: (){
-                    _fetchid();
-                  }
-                )
-                  
-            )
-          ]
-        )
+        body:
+          Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children : <Widget>[
+              Center(
+                child:
+                  TextFormField(
+                    controller: _controller,
+                    autofocus: true,
+                    decoration:
+                      InputDecoration(
+                        icon: Icon(Icons.account_circle),
+                        border: InputBorder.none,
+                        labelText: "이름 또는 아이디를 입력하세요",
+                      ),
+                  ),
+              ),
+              Center(
+                child:
+                  TextButton(
+                    child:
+                      Text("로그인"),
+                    style:
+                      TextButton.styleFrom(primary:Colors.blue),
+                    onPressed: (){
+                      _fetchid();
+                    }
+                  )
+                    
+              )
+            ]
+          )
           
       ),
     );
   }
-
 }
