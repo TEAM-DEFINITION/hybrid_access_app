@@ -24,6 +24,7 @@ class _LoginPageState extends State<LoginPage> {
       Uri.parse("http://112.156.0.196:55555/app/login"),
       headers: <String, String> {
         'Content-Type': 'application/x-www-form-urlencoded',
+        'Access-Control-Allow-Origin': '*'
       },
       body: <String, String>{
         'user_id' : _controller.text,
