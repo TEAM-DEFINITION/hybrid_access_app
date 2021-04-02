@@ -12,6 +12,7 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
 
   final TextEditingController _controller = TextEditingController();
+  final TextEditingController _controller2 = TextEditingController();
   List data = [];
   bool isLoading = false;
 
@@ -26,14 +27,18 @@ class _LoginPageState extends State<LoginPage> {
       },
       body: <String, String>{
         'user_id' : _controller.text,
-        'user_pwd' : _controller.text,
+        'user_pwd' : _controller2.text,
       }
       ,
     );
     if(response.statusCode == 200){
       setState(() {
         print(response.body);
-        Navigator.push(context, MaterialPageRoute(builder: (context) => TabPage(data:"로그인성공\n 이름 : "+_controller.text,userid: _controller.text,)));
+        Navigator.push(context, MaterialPageRoute(builder: (context) =>
+          TabPage(data:"로그인성공\n 이름 : "+_controller.text,
+                  userid: _controller.text,
+                  userPwd: _controller2.text,
+          )));
       });
     } else{
       throw Exception("failed to load data");
@@ -77,6 +82,19 @@ class _LoginPageState extends State<LoginPage> {
                         icon: Icon(Icons.account_circle),
                         border: InputBorder.none,
                         labelText: "이름 또는 아이디를 입력하세요",
+                      ),
+                  ),
+              ),
+              Center(
+                child:
+                  TextFormField(
+                    controller: _controller2,
+                    autofocus: true,
+                    decoration:
+                      InputDecoration(
+                        icon: Icon(Icons.security_rounded),
+                        border: InputBorder.none,
+                        labelText: "비밀번호를 입력하세요",
                       ),
                   ),
               ),

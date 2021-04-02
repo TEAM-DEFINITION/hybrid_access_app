@@ -7,7 +7,8 @@ import 'package:http/http.dart' as http;
 class TabPage extends StatefulWidget {
   String data; // 데이터변수
   String userid; // 데이터변수
-  TabPage({@required this.data, this.userid}); // 데이터 생성자
+  String userPwd; // 데이터변수
+  TabPage({@required this.data, this.userid, this.userPwd}); // 데이터 생성자
 
   @override
   _TabPageState createState() => _TabPageState();
@@ -35,6 +36,8 @@ class _TabPageState extends State<TabPage> {
         'Content-Type': 'application/x-www-form-urlencoded',
       },
       body: <String, String>{
+        'user_id' : widget.userid,
+        'user_pwd' : widget.userPwd,
         'postcode': _postcode.text,
       },
     );
@@ -46,6 +49,8 @@ class _TabPageState extends State<TabPage> {
       throw Exception("failed to load data");
     }
   }
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -101,7 +106,7 @@ class _TabPageState extends State<TabPage> {
               child: Text(
                 "인증",
               ),
-            )
+            ),
           ],
         ),
       ),
