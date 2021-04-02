@@ -6,7 +6,8 @@ import 'package:http/http.dart' as http;
 
 class TabPage extends StatefulWidget {
   String data; // 데이터변수
-  TabPage({@required this.data}); // 데이터 생성자
+  String userid; // 데이터변수
+  TabPage({@required this.data, this.userid}); // 데이터 생성자
 
   @override
   _TabPageState createState() => _TabPageState();
@@ -51,7 +52,7 @@ class _TabPageState extends State<TabPage> {
     return SafeArea(
         child: Scaffold(
       appBar: AppBar(
-        title: Text("전자출입증명", style: TextStyle(color: Colors.black)),
+        title: Text("전자출입증명 :"+ widget.userid, style: TextStyle(color: Colors.black)),
         backgroundColor: Colors.white38,
         leading: Container(),
       ),
