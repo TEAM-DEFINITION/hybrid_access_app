@@ -35,13 +35,16 @@ class _TabPageState extends State<TabPage> {
         'Content-Type': 'application/x-www-form-urlencoded',
       },
       body: <String, String>{
-        'user_id' : widget.userid,
-        'user_pwd' : widget.userPwd,
+        'user_id': widget.userid,
+        'user_pwd': widget.userPwd,
         'postcode': _postcode.text,
       },
     );
     if (response.statusCode == 200) {
       setState(() {
+        // 팝업창 띄우기
+        _postcode.text = "";
+        _showDialog(response.body);
         print(response.body);
       });
     } else {
@@ -49,14 +52,13 @@ class _TabPageState extends State<TabPage> {
     }
   }
 
-
-
   @override
   Widget build(BuildContext context) {
     return SafeArea(
         child: Scaffold(
       appBar: AppBar(
-        title: Text("전자출입증명 :"+ widget.userid, style: TextStyle(color: Colors.black)),
+        title: Text("전자출입증명 :" + widget.userid,
+            style: TextStyle(color: Colors.black)),
         backgroundColor: Colors.white38,
         leading: Container(),
       ),
@@ -126,5 +128,26 @@ class _TabPageState extends State<TabPage> {
     setState(() {
       _selectedIndex = index;
     });
+  }
+
+  void _showDialog(data) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        // return object of type Dialog
+        return AlertDialog(
+          title: new Text("인증성공"),
+          content: new Text(data),
+          actions: <Widget>[
+            new FlatButton(
+              child: new Text("닫기"),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 }
