@@ -21,7 +21,7 @@ class _LoginPageState extends State<LoginPage> {
       isLoading = true;
     });
     final response = await http.post(
-      Uri.parse("http://112.156.0.196:55555/app/login"),
+      Uri.parse("http://112.156.0.196:55555/app/signup"),
       headers: <String, String> {
         'Content-Type': 'application/x-www-form-urlencoded',
       },
