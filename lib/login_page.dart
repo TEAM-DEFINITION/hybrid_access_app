@@ -3,6 +3,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 import 'package:hybrid_access_app/tab_page.dart';
+import 'file_manage.dart' as file;
 
 class LoginPage extends StatefulWidget {
   @override
@@ -33,7 +34,9 @@ class _LoginPageState extends State<LoginPage> {
     );
     if(response.statusCode == 200){
       setState(() {
-        print(response.body);
+
+        file.write(_controller.text);
+
         Navigator.push(context, MaterialPageRoute(builder: (context) =>
           TabPage(data:"로그인성공\n 이름 : "+_controller.text,
                   userid: _controller.text,

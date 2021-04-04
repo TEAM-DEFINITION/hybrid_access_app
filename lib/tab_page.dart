@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:encrypt/encrypt.dart';
+import 'file_manage.dart' as file;
 
 class TabPage extends StatefulWidget {
   String data; // 데이터변수
@@ -48,12 +49,13 @@ class _TabPageState extends State<TabPage> {
         // 팝업창 띄우기
         _postcode.text = "";
         _showDialog(response.body);
-        print(response.body);
       });
     } else {
       throw Exception("failed to load data");
     }
   }
+
+
 
   @override
   Widget build(BuildContext context) {
