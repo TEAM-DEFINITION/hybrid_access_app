@@ -35,7 +35,7 @@ class _LoginPageState extends State<LoginPage> {
     if(response.statusCode == 200){
       setState(() {
 
-        file.write(_controller.text);
+        file.genesisWrite(_controller.text);
 
         Navigator.push(context, MaterialPageRoute(builder: (context) =>
           TabPage(data:"로그인성공\n 이름 : "+_controller.text,
