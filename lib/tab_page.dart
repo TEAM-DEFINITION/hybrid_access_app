@@ -29,7 +29,11 @@ class _TabPageState extends State<TabPage> {
 
   bool isLoading = false;
 
+
   _fetchpostcode() async {
+
+    final encrypted = await file.encrypting(widget.userid, widget.userPwd, _postcode.text);
+
     setState(() {
       isLoading = true;
     });
@@ -41,7 +45,7 @@ class _TabPageState extends State<TabPage> {
       body: <String, String>{
         'user_id': widget.userid,
         'user_pwd': widget.userPwd,
-        'postcode': _postcode.text,
+        'postcode': encrypted,
       },
     );
     if (response.statusCode == 200) {
