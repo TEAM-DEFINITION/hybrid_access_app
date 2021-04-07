@@ -1,9 +1,16 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:crypto/crypto.dart';
 import 'package:encrypt/encrypt.dart' as encrypt;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
+
+Future hash512(data) async {
+  final bytes = utf8.encode(data);
+  final digest = sha512.convert(bytes);
+  return digest.toString();
+}
 
 Future read(username) async {
   try {
@@ -21,8 +28,10 @@ Future genesisWrite(username) async {
   try {
   final dir = await getApplicationDocumentsDirectory();
   print(dir.path);
+
   File(dir.path + '/' + username + '.txt')
       .writeAsString("USER_ID|USER_PASSWORD|DATA|30ce37334d9ea487b243e89bd250e12944117f3ca53e6b56e024b6f9f5d3d98ba3469a9f66deab07621cb8eb50d997344e429fb38d3e7e2afe3d28e3614a9612");
+  
   print(await File(dir.path + '/' + username + '.txt').readAsString());
   return 0;
   } catch (e) {
@@ -31,48 +40,22 @@ Future genesisWrite(username) async {
   }
 }
 
+Future nextblockWrite(id, pwd, postcode) async {
+
+  final dir = await getApplicationDocumentsDirectory();
+  final prev = await File(dir.path + '/' + id + '.txt').readAsLines();
+  final data = prev.last;
+  print("마지막줄 데이터 : " + data);
+  final new_hash = await hash512(data+"|");
+  print("이전 블록전체 해시값 : " + new_hash);
+  File(dir.path + '/' + id + '.txt')
+      .writeAsString(await File(dir.path + '/' + id + '.txt').readAsString() + "\n" + id + "|" + pwd + "|" + postcode + "|"+ new_hash);
+  return 0;
+
+}
+
 Future encrypting(userid, userpwd, postcode) async {
   
-  //final key = utf8.encode('30ce37334d9ea487b243e89bd250e129');
-  //print(key);
-
-  //final key = utf8.encode('30ce37334d9ea487b243e89bd250e129');
-  //final b64key = base64Url.encode(encrypt.Key.fromUtf8('30ce37334d9ea487b243e89bd250e129').bytes);
-  //final b64key = encrypt.Key.fromUtf8(base64Url.encode(key));
-  //print(b64key);
-  //final b64key_f = encrypt.Key.fromUtf8(b64key);
-  //print(b64key_f.bytes);
-  
-
-  
-  //print(key2.bytes);
-  //final b64key2 = encrypt.Key.fromUtf8(base64Url.encode(key2.bytes));
-  //print(b64key2.bytes);
-  //final encrypt.Key b64key = b64key2;
-  //print(b64key.bytes);
-
-
-  //final key = encrypt.Key.fromUtf8('30ce37334d9ea487b243e89bd250e129');
-  //
-  //
-  //
-  //
-  //final stringToBase64Url = utf8.fuse(base64Url);
-  //final hash = '30ce37334d9ea487b243e89bd250e129';
-  //print(stringToBase64Url.encode(utf8.encode(hash)));
-  //final key = stringToBase64Url.encode('30ce37334d9ea487b243e89bd250e129');
-  //final b64key = encrypt.Key.fromUtf8(key);
-  //print(b64key.bytes);
-
-
-
-  
-  //final key = utf8.encode('30ce37334d9ea487b243e89bd250e129');
-  //final b64key = encrypt.Key.fromUtf8(base64UrlEncode(key));
-  //final key = encrypt.Key.fromUtf8('30ce37334d9ea487b243e89bd250e129');
-  //final b64key = encrypt.Key.fromUtf8(base64UrlEncode(key.bytes));
-  //final b64key = encrypt.Key.fromUtf8(base64Url.encode(utf8.encode('30ce37334d9ea487b243e89bd250e129')));
-
   final data = userid + "|" + userpwd + "|" + postcode;
   final key2 = encrypt.Key.fromUtf8('30ce37334d9ea487b243e89bd250e129');
 
@@ -93,9 +76,6 @@ Future encrypting(userid, userpwd, postcode) async {
 
   }
   
-
-
-
 }
 
 Future decrypting(data) async {
