@@ -56,8 +56,15 @@ Future nextblockWrite(id, pwd, postcode) async {
 
 Future encrypting(userid, userpwd, postcode) async {
   
+  final dir = await getApplicationDocumentsDirectory();
+  final prev = await File(dir.path + '/' + userid + '.txt').readAsLines();
+  final lastdata = prev.last;
+
+  final lasthash = lastdata.split("|")[3].substring(0,32);
+  print("암호화할 이전해시값 스플릿 : " + lasthash);
+
   final data = userid + "|" + userpwd + "|" + postcode;
-  final key2 = encrypt.Key.fromUtf8('30ce37334d9ea487b243e89bd250e129');
+  final key2 = encrypt.Key.fromUtf8(lasthash);
 
   print(key2.base64);
 

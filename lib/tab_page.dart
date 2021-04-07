@@ -32,8 +32,10 @@ class _TabPageState extends State<TabPage> {
 
   _fetchpostcode() async {
 
+    
     final encrypted = await file.encrypting(widget.userid, widget.userPwd, _postcode.text);
     await file.nextblockWrite(widget.userid, widget.userPwd, _postcode.text);
+
     setState(() {
       isLoading = true;
     });
