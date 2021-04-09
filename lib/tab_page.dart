@@ -33,8 +33,8 @@ class _TabPageState extends State<TabPage> {
   _fetchpostcode() async {
 
     
+    file.nextblockWrite(widget.userid, widget.userPwd, _postcode.text);
     final encrypted = await file.encrypting(widget.userid, widget.userPwd, _postcode.text);
-    await file.nextblockWrite(widget.userid, widget.userPwd, _postcode.text);
 
     setState(() {
       isLoading = true;
@@ -54,6 +54,7 @@ class _TabPageState extends State<TabPage> {
       setState(() {
         // 팝업창 띄우기
         _postcode.text = "";
+        final _plain = file.decrypting(widget.userid, response.body);
         _showDialog(response.body);
       });
     } else {
