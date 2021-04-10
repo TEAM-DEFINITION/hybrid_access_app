@@ -61,9 +61,11 @@ Future encrypting(userid, userpwd, postcode) async {
   final prev = await File(dir.path + '/' + userid + '.txt').readAsLines();
   final lastdata = prev.last;
   final lasthash = lastdata.split("|")[3].substring(0,32);
+  print("암호화할 해시 : " + lasthash);
+  final key = encrypt.Key.fromUtf8(lasthash);
+  print("암호화할 키값 : " + key.base64);
 
   final String data = userid + "|" + userpwd + "|" + postcode;
-  final key = encrypt.Key.fromUtf8(lasthash);
 
   try {
     final fernet = encrypt.Fernet(key);
@@ -83,14 +85,16 @@ Future encrypting(userid, userpwd, postcode) async {
 Future decrypting(id, response) async {
   print("복호화 시작 ---------------------");
   print("받은 암호문 : " + response.toString());
-  final String temp = response.toString();
-  final encrypt.Encrypted encrypted = encrypt.Encrypted(utf8.encode(temp));
-  print(encrypted.bytes);
-
+  
+  final data = response.toString().replaceAll("\"", "");
+  final encrypt.Encrypted encrypted = encrypt.Encrypted.fromBase64(data);
+  //final encrypt.Encrypted data = encrypt.Encrypted.fromBase64(response);
+  //final encrypt.Encrypted encrypted = encrypt.Encrypted(utf8.encode(temp));
+  //
   final dir = await getApplicationDocumentsDirectory();
   final prev = await File(dir.path + '/' + id + '.txt').readAsLines();
-
   final prev_hash = prev.last.split("|")[3].substring(0,32);
+  print("복호화할 해시 : " + prev_hash);
   final d_key = encrypt.Key.fromUtf8(prev_hash);
   print("복호화할 키값 : " + d_key.base64);
 
