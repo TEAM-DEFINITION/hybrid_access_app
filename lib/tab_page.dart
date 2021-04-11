@@ -57,7 +57,8 @@ class _TabPageState extends State<TabPage> {
       });
 
       final String _data = await file.decrypting(widget.userid, response.body);
-      _showDialog(_data);
+      _showDialog("사용자 : " + widget.userid + "\n" + "가맹점 이름 : " + _data.split("|")[1] + "\n" + "인증시간 : " + _data.split("|")[2] + "\n" + "인증서버 : " + _data.split("|")[0]);
+
     } else {
       throw Exception("failed to load data");
     }
