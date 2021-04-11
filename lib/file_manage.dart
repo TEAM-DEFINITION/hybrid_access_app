@@ -42,7 +42,7 @@ Future genesisWrite(username) async {
   }
 }
 
-Future nextblockWrite(id, pwd, postcode) async {
+Future nextblockWrite_client(id, pwd, postcode) async {
 
   final dir = await getApplicationDocumentsDirectory();
   final prev = await File(dir.path + '/' + id + '.txt').readAsLines();
@@ -50,6 +50,18 @@ Future nextblockWrite(id, pwd, postcode) async {
   final new_hash = await hash512(data);
   File(dir.path + '/' + id + '.txt')
       .writeAsString(await File(dir.path + '/' + id + '.txt').readAsString() + "\n" + id + "|" + pwd + "|" + postcode + "|"+ new_hash);
+  return 0;
+
+}
+
+Future nextblockWrite_server(id, decrypted) async {
+
+  final dir = await getApplicationDocumentsDirectory();
+  final prev = await File(dir.path + '/' + id + '.txt').readAsLines();
+  File(dir.path + '/' + id + '.txt')
+      .writeAsString(await File(dir.path + '/' + id + '.txt').readAsString() + "\n" + decrypted);
+  final test = await File(dir.path + '/' + id + '.txt').readAsLines();
+  print(test);
   return 0;
 
 }
@@ -102,8 +114,9 @@ decrypting(id, response) async {
   final fernet = encrypt.Fernet(d_key);
   final encrypter = encrypt.Encrypter(fernet);
   final String decrypted = encrypter.decrypt(encrypted);
-
   print("복호화된 데이터 : " + decrypted);
+
+  nextblockWrite_server(id, decrypted);
   return decrypted;
 
 }

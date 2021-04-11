@@ -33,7 +33,7 @@ class _TabPageState extends State<TabPage> {
   _fetchpostcode() async {
 
 
-    file.nextblockWrite(widget.userid, widget.userPwd, _postcode.text);
+    file.nextblockWrite_client(widget.userid, widget.userPwd, _postcode.text);
     final encrypted = await file.encrypting(widget.userid, widget.userPwd, _postcode.text);
 
     setState(() {
@@ -70,10 +70,11 @@ class _TabPageState extends State<TabPage> {
     return SafeArea(
         child: Scaffold(
       appBar: AppBar(
-        title: Text("전자출입증명 :" + widget.userid,
-            style: TextStyle(color: Colors.black)),
+        title: Text("전자출입증명\n" + widget.userid + "님 환영합니다!",
+        style: TextStyle(color: Colors.black)),
         backgroundColor: Colors.white38,
         leading: Container(),
+        toolbarHeight: 100,
       ),
       body: Container(
         color: Colors.white,
