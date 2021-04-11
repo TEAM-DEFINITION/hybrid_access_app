@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:encrypt/encrypt.dart';
@@ -113,8 +114,15 @@ class _TabPageState extends State<TabPage> {
                           decoration: InputDecoration(
                               border: InputBorder.none,
                               hintText: "필수 입력",
-                              hintStyle: TextStyle(color: Colors.grey[300])),
+                              hintStyle: TextStyle(color: Colors.grey[300]),
+                              counterText: ''
+                          ),
                           cursorColor: Colors.blue,
+                          maxLength: 5,
+                          inputFormatters: [
+                            FilteringTextInputFormatter.allow(RegExp('[0-9]'))
+                            //WhitelistingTextInputFormatter(RegExp('[0-9]'))
+                          ],
                         ),
                       ))
                     ],
