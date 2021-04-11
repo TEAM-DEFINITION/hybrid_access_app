@@ -32,7 +32,7 @@ Future genesisWrite(username) async {
   //print(dir.path);
 
   File(dir.path + '/' + username + '.txt')
-      .writeAsString("USER_ID|USER_PASSWORD|DATA|30ce37334d9ea487b243e89bd250e12944117f3ca53e6b56e024b6f9f5d3d98ba3469a9f66deab07621cb8eb50d997344e429fb38d3e7e2afe3d28e3614a9612");
+      .writeAsString("USER_ID|USER_PASSWORD|DATA|30ce37334d9ea487b243e89bd250e12944117f3ca53e6b56e024b6f9f5d3d98ba3469a9f66deab07621cb8eb50d997344e429fb38d3e7e2afe3d28e3614a9612|");
   
   //print(await File(dir.path + '/' + username + '.txt').readAsString());
   return 0;
@@ -47,7 +47,7 @@ Future nextblockWrite(id, pwd, postcode) async {
   final dir = await getApplicationDocumentsDirectory();
   final prev = await File(dir.path + '/' + id + '.txt').readAsLines();
   final data = prev.last;
-  final new_hash = await hash512(data+"|");
+  final new_hash = await hash512(data);
   File(dir.path + '/' + id + '.txt')
       .writeAsString(await File(dir.path + '/' + id + '.txt').readAsString() + "\n" + id + "|" + pwd + "|" + postcode + "|"+ new_hash);
   return 0;
@@ -65,7 +65,7 @@ Future encrypting(userid, userpwd, postcode) async {
   final key = encrypt.Key.fromUtf8(lasthash);
   print("암호화할 키값 : " + key.base64);
 
-  final String data = userid + "|" + userpwd + "|" + postcode;
+  final String data = userid + "|" + userpwd + "|" + postcode + "|";
 
   try {
     final fernet = encrypt.Fernet(key);
