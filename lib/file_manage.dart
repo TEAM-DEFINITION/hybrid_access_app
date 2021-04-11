@@ -82,7 +82,8 @@ Future encrypting(userid, userpwd, postcode) async {
   
 }
 
-Future decrypting(id, response) async {
+decrypting(id, response) async {
+
   print("복호화 시작 ---------------------");
   print("받은 암호문 : " + response.toString());
   
@@ -100,8 +101,9 @@ Future decrypting(id, response) async {
 
   final fernet = encrypt.Fernet(d_key);
   final encrypter = encrypt.Encrypter(fernet);
-  final decrypted = encrypter.decrypt(encrypted);
+  final String decrypted = encrypter.decrypt(encrypted);
 
   print("복호화된 데이터 : " + decrypted);
   return decrypted;
+
 }

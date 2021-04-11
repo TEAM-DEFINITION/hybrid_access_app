@@ -32,7 +32,7 @@ class _TabPageState extends State<TabPage> {
 
   _fetchpostcode() async {
 
-    
+
     file.nextblockWrite(widget.userid, widget.userPwd, _postcode.text);
     final encrypted = await file.encrypting(widget.userid, widget.userPwd, _postcode.text);
 
@@ -52,11 +52,12 @@ class _TabPageState extends State<TabPage> {
     );
     if (response.statusCode == 200) {
       setState(() {
-        // 팝업창 띄우기
+        isLoading = false;
         _postcode.text = "";
-        final _plain = file.decrypting(widget.userid, response.body);
-        _showDialog(response.body);
       });
+
+      final String _data = await file.decrypting(widget.userid, response.body);
+      _showDialog(_data);
     } else {
       throw Exception("failed to load data");
     }
