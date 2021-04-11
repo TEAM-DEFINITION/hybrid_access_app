@@ -53,12 +53,17 @@ class _TabPageState extends State<TabPage> {
     if (response.statusCode == 200) {
       setState(() {
         isLoading = false;
-        _postcode.text = "";
       });
 
       final String _data = await file.decrypting(widget.userid, response.body);
-      _showDialog("사용자 : " + widget.userid + "\n" + "가맹점 이름 : " + _data.split("|")[1] + "\n" + "인증시간 : " + _data.split("|")[2] + "\n" + "인증서버 : " + _data.split("|")[0]);
-
+      if (_data.split("|")[1] == "NULL") {
+        _showDialogFail("사용자 : " + widget.userid + "\n" + "가맹점 조회를 실패하였습니다.\n" + "인증시간 : " + _data.split("|")[2] + "\n" + "인증서버 : " + _data.split("|")[0]);
+      }
+      else {
+        _showDialogSuccess("사용자 : " + widget.userid + "\n" + "가맹점 이름 : " + _data.split("|")[1] + "\n" + "인증시간 : " + _data.split("|")[2] + "\n" + "인증서버 : " + _data.split("|")[0]);
+      }
+      
+      _postcode.text = "";
     } else {
       throw Exception("failed to load data");
     }
@@ -136,8 +141,9 @@ class _TabPageState extends State<TabPage> {
               icon: Icon(Icons.account_circle), label: "Account"),
         ],
       ),
-    ));
-  }
+    )
+  );
+}
 
   void _onItemTapped(int index) {
     setState(() {
@@ -145,13 +151,34 @@ class _TabPageState extends State<TabPage> {
     });
   }
 
-  void _showDialog(data) {
+  void _showDialogSuccess(data) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
         // return object of type Dialog
         return AlertDialog(
           title: new Text("인증성공"),
+          content: new Text(data),
+          actions: <Widget>[
+            new FlatButton(
+              child: new Text("닫기"),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _showDialogFail(data) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        // return object of type Dialog
+        return AlertDialog(
+          title: new Text("인증실패"),
           content: new Text(data),
           actions: <Widget>[
             new FlatButton(
