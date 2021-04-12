@@ -5,7 +5,7 @@
 
 
    <application
-        android:label="hybrid_access_app"
+        android:label="전자출입증명"
         android:usesCleartextTraffic="true"
         android:icon="@mipmap/ic_launcher">
         <activity

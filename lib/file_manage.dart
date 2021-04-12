@@ -25,16 +25,20 @@ Future read(username) async {
   }
 }
 
-Future genesisWrite(username) async {
+Future genesisWrite(user_id, user_pwd) async {
 
   try {
   final dir = await getApplicationDocumentsDirectory();
   //print(dir.path);
-
-  File(dir.path + '/' + username + '.txt')
-      .writeAsString("USER_ID|USER_PASSWORD|DATA|30ce37334d9ea487b243e89bd250e12944117f3ca53e6b56e024b6f9f5d3d98ba3469a9f66deab07621cb8eb50d997344e429fb38d3e7e2afe3d28e3614a9612|");
+  //
+  //
+  String temp = user_id + "|" + user_pwd + "|DATA|";
+  final new_hash = await hash512(temp);
+  temp = temp + new_hash + "|";
+  File(dir.path + '/' + user_id + '.txt')
+      .writeAsString(temp);
   
-  //print(await File(dir.path + '/' + username + '.txt').readAsString());
+  print(await File(dir.path + '/' + user_id + '.txt').readAsString());
   return 0;
   } catch (e) {
     print("쓰기에 실패하였습니다");
@@ -45,6 +49,7 @@ Future genesisWrite(username) async {
 Future nextblockWrite_client(id, pwd, postcode) async {
 
   final dir = await getApplicationDocumentsDirectory();
+  print(dir.path);
   final prev = await File(dir.path + '/' + id + '.txt').readAsLines();
   final data = prev.last;
   final new_hash = await hash512(data);

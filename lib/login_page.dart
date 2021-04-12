@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:hybrid_access_app/signup_page.dart';
 import 'dart:convert';
 
 import 'package:hybrid_access_app/tab_page.dart';
@@ -22,7 +23,7 @@ class _LoginPageState extends State<LoginPage> {
       isLoading = true;
     });
     final response = await http.post(
-      Uri.parse("http://112.156.0.196:55555/app/signup"),
+      Uri.parse("http://112.156.0.196:55555/app/login"),
       headers: <String, String> {
         'Content-Type': 'application/x-www-form-urlencoded',
       },
@@ -33,20 +34,56 @@ class _LoginPageState extends State<LoginPage> {
       ,
     );
     if(response.statusCode == 200){
-      setState(() {
+      isLoading = false;
 
-        file.genesisWrite(_controller.text);
+      if (response.body == "200") {
 
         Navigator.push(context, MaterialPageRoute(builder: (context) =>
-          TabPage(data:"로그인성공\n 이름 : "+_controller.text,
-                  userid: _controller.text,
-                  userPwd: _controller2.text,
-          )));
-      });
+        TabPage(data:"로그인성공\n 이름 : "+_controller.text,
+                userid: _controller.text,
+                userPwd: _controller2.text,
+        )));
+
+      } else {
+
+        _showDialogLoginFail();
+
+      }
+      
     } else{
       throw Exception("failed to load data");
 
     }
+  }
+
+void _showDialogLoginFail() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        // return object of type Dialog
+        return AlertDialog(
+          title: new Text("로그인 실패"),
+          content: new Text("아이디가 존재하지 않습니다!!"),
+          actions: <Widget>[
+            new FlatButton(
+              child: new Text("닫기"),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            ),
+          ],
+        );
+      },
+    );
+    _controller.text = "";
+    _controller2.text = "";
+
+  }
+
+  _signup() async {
+
+    Navigator.push(context, MaterialPageRoute(builder: (context) => SignUp()));
+
   }
 
   @override
@@ -92,6 +129,7 @@ class _LoginPageState extends State<LoginPage> {
                 child:
                   TextFormField(
                     controller: _controller2,
+                    obscureText: true,
                     autofocus: true,
                     decoration:
                       InputDecoration(
@@ -113,7 +151,20 @@ class _LoginPageState extends State<LoginPage> {
                     }
                   )
                     
-              )
+              ),
+              Center(
+                child:
+                  TextButton(
+                    child:
+                      Text("아직 회원이 아니신가요?"),
+                    style:
+                      TextButton.styleFrom(primary:Colors.grey),
+                    onPressed: (){
+                      _signup();
+                    }
+                  )
+                    
+              ),
             ]
           )
           
