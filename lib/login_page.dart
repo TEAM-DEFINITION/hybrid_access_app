@@ -47,6 +47,8 @@ class _LoginPageState extends State<LoginPage> {
       } else {
 
         _showDialogLoginFail();
+        _controller.text = "";
+        _controller2.text = "";
 
       }
       

@@ -178,7 +178,7 @@ class _SignUpState extends State<SignUp> {
                 child:
                   TextButton(
                     child:
-                      Text("로그인"),
+                      Text("회원가입"),
                     style:
                       TextButton.styleFrom(primary:Colors.blue),
                     onPressed: (){
