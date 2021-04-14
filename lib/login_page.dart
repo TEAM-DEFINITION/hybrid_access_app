@@ -44,12 +44,18 @@ class _LoginPageState extends State<LoginPage> {
                 userPwd: _controller2.text,
         )));
 
-      } else {
+      } else if (response.body == "401") {
 
-        _showDialogLoginFail();
+        _showDialogLoginIdFail();
         _controller.text = "";
         _controller2.text = "";
 
+      } else if (response.body == "402") {
+
+        _showDialogLoginPwdFail();
+        _controller.text = "";
+        _controller2.text = "";
+        
       }
       
     } else{
@@ -58,7 +64,7 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
-void _showDialogLoginFail() {
+  void _showDialogLoginIdFail() {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -66,6 +72,30 @@ void _showDialogLoginFail() {
         return AlertDialog(
           title: new Text("로그인 실패"),
           content: new Text("아이디가 존재하지 않습니다!!"),
+          actions: <Widget>[
+            new FlatButton(
+              child: new Text("닫기"),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            ),
+          ],
+        );
+      },
+    );
+    _controller.text = "";
+    _controller2.text = "";
+
+  }
+
+  void _showDialogLoginPwdFail() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        // return object of type Dialog
+        return AlertDialog(
+          title: new Text("로그인 실패"),
+          content: new Text("비밀번호가 틀립니다!!"),
           actions: <Widget>[
             new FlatButton(
               child: new Text("닫기"),
