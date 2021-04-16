@@ -143,7 +143,9 @@ class _SignUpState extends State<SignUp> {
                         icon: Icon(Icons.account_circle),
                         border: InputBorder.none,
                         labelText: "아이디",
+                        counterText: ''
                       ),
+                    maxLength: 10
                   ),
               ),
               Center(
@@ -157,7 +159,9 @@ class _SignUpState extends State<SignUp> {
                         icon: Icon(Icons.account_circle),
                         border: InputBorder.none,
                         labelText: "비밀번호",
+                        counterText: ''
                       ),
+                    maxLength: 10
                   ),
               ),
               Center(
@@ -171,7 +175,9 @@ class _SignUpState extends State<SignUp> {
                         icon: Icon(Icons.account_circle),
                         border: InputBorder.none,
                         labelText: "비밀번호 확인",
+                        counterText: ''
                       ),
+                    maxLength: 10,
                   ),
               ),
               Center(

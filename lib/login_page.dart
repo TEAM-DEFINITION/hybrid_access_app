@@ -55,7 +55,7 @@ class _LoginPageState extends State<LoginPage> {
         _showDialogLoginPwdFail();
         _controller.text = "";
         _controller2.text = "";
-        
+
       }
       
     } else{
@@ -154,7 +154,9 @@ class _LoginPageState extends State<LoginPage> {
                         icon: Icon(Icons.account_circle),
                         border: InputBorder.none,
                         labelText: "이름 또는 아이디를 입력하세요",
+                        counterText: ""
                       ),
+                    maxLength: 10
                   ),
               ),
               Center(
@@ -168,7 +170,9 @@ class _LoginPageState extends State<LoginPage> {
                         icon: Icon(Icons.security_rounded),
                         border: InputBorder.none,
                         labelText: "비밀번호를 입력하세요",
+                        counterText: ""
                       ),
+                    maxLength: 10
                   ),
               ),
               Center(
