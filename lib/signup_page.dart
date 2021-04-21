@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'file_manage.dart' as file;
+import 'dart:math';
 
 
 class SignUp extends StatefulWidget {
@@ -18,10 +19,14 @@ class _SignUpState extends State<SignUp> {
 
   _fetchSignUp() async {
 
+    
+
     if (_pwdcontroller.text == _pwdcheckcontroller.text) {
         setState(() {
         isLoading = true;
       });
+
+      final clientrandom = random();
 
       final response = await http.post(
         Uri.parse("http://112.156.0.196:55555/app/signup"),
@@ -31,6 +36,7 @@ class _SignUpState extends State<SignUp> {
         body: <String, String>{
           'user_id' : _idcontroller.text,
           'user_pwd' : _pwdcontroller.text,
+          'clientrandom' : clientrandom.toString()
         }
         ,
       );
@@ -44,7 +50,7 @@ class _SignUpState extends State<SignUp> {
         } else {
 
           setState(() {
-          file.genesisWrite(_idcontroller.text, _pwdcontroller.text);
+          file.genesisWrite(_idcontroller.text, _pwdcontroller.text, clientrandom.toString());
           isLoading = false;
           Navigator.pop(context);
 
@@ -111,6 +117,10 @@ class _SignUpState extends State<SignUp> {
     _pwdcontroller.text = "";
     _pwdcheckcontroller.text = "";
 
+  }
+
+  random() {
+    return Random.secure().hashCode;
   }
 
   @override

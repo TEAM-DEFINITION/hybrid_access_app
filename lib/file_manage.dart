@@ -25,14 +25,14 @@ Future read(username) async {
   }
 }
 
-Future genesisWrite(user_id, user_pwd) async {
+Future genesisWrite(user_id, user_pwd, clientrandom) async {
 
   try {
   final dir = await getApplicationDocumentsDirectory();
   //print(dir.path);
   //
   //
-  String temp = user_id + "|" + user_pwd + "|DATA|";
+  String temp = user_id + "|" + user_pwd + "|" + clientrandom +"|";
   final new_hash = await hash512(temp);
   temp = temp + new_hash + "|";
   File(dir.path + '/' + user_id + '.txt')
