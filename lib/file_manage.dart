@@ -32,7 +32,8 @@ Future genesisWrite(user_id, user_pwd, clientrandom) async {
   //print(dir.path);
   //
   //
-  String temp = user_id + "|" + user_pwd + "|" + clientrandom +"|";
+  var hashedPassword = await hash512(user_pwd);
+  String temp = user_id + "|" + hashedPassword + "|" + clientrandom +"|";
   final new_hash = await hash512(temp);
   temp = temp + new_hash + "|";
   File(dir.path + '/' + user_id + '.txt')
