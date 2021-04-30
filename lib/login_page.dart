@@ -59,7 +59,8 @@ class _LoginPageState extends State<LoginPage> {
       }
       
     } else{
-      throw Exception("failed to load data");
+      _showNetworkFail();
+      //throw Exception("failed to load data");
 
     }
   }
@@ -96,6 +97,30 @@ class _LoginPageState extends State<LoginPage> {
         return AlertDialog(
           title: new Text("로그인 실패"),
           content: new Text("비밀번호가 틀립니다!!"),
+          actions: <Widget>[
+            new FlatButton(
+              child: new Text("닫기"),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            ),
+          ],
+        );
+      },
+    );
+    _controller.text = "";
+    _controller2.text = "";
+
+  }
+
+  void _showNetworkFail() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        // return object of type Dialog
+        return AlertDialog(
+          title: new Text("오류"),
+          content: new Text("서버로부터 응답이 없습니다."),
           actions: <Widget>[
             new FlatButton(
               child: new Text("닫기"),
