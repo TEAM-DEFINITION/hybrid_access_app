@@ -175,7 +175,7 @@ class _SignUpState extends State<SignUp> {
                     autofocus: true,
                     decoration:
                       InputDecoration(
-                        icon: Icon(Icons.account_circle),
+                        icon: Icon(Icons.security_rounded),
                         border: InputBorder.none,
                         labelText: "아이디",
                         counterText: ''
@@ -191,7 +191,7 @@ class _SignUpState extends State<SignUp> {
                     autofocus: true,
                     decoration:
                       InputDecoration(
-                        icon: Icon(Icons.account_circle),
+                        icon: Icon(Icons.security_rounded),
                         border: InputBorder.none,
                         labelText: "비밀번호",
                         counterText: ''
