@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'dart:ui';
-
+import 'dart:ffi';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
@@ -32,7 +32,10 @@ class _TabPageState extends State<TabPage> {
 
   bool isLoading = false;
 
-
+  // load server_publicKey
+  Future<String> loadAsset() async {
+    return await rootBundle.loadString('assets/receiver.pem');
+  }
   _fetchpostcode() async {
 
     file.nextblockWrite_client(widget.userid, widget.userPwd, _postcode.text);
@@ -44,13 +47,14 @@ class _TabPageState extends State<TabPage> {
 
     final response = await http.post(
       Uri.parse("http://112.156.0.196:55555/app/post"),
+      // Uri.parse("http://10.0.2.2:8000/app/post"),
       headers: <String, String>{
         'Content-Type': 'application/x-www-form-urlencoded',
       },
       body: <String, String>{
         'user_id': widget.userid,
         'user_pwd': widget.userPwd,
-        'postcode': encrypted,
+        'postcode': encrypted
       },
     );
     if (response.statusCode == 200) {
@@ -62,8 +66,8 @@ class _TabPageState extends State<TabPage> {
       if (_data.split("|")[1] == "NULL") {
         _showDialogFail("사용자 : " + widget.userid + "\n" + "가맹점 조회를 실패하였습니다.\n" + "인증시간 : " + _data.split("|")[2] + "\n" + "인증서버 : " + _data.split("|")[0]);
       }
-      else {  // "cur_idx"+await file.chkIdx()+"\n"+
-        _showDialogSuccess("사용자 : " + widget.userid + "\n" + "가맹점 이름 : " + _data.split("|")[1] + "\n" + "인증시간 : " + _data.split("|")[2] + "\n" + "인증서버 : " + _data.split("|")[0]);
+      else {  // "cur_idx"+await file.chkIdx()+"\n"+    "privateKey:"+keyPair[0]+'\n'+"사용자 : " + keyPair[1] +   +"사용자 : " +widget.userid
+        _showDialogSuccess("사용자 : "+"\n" + "가맹점 이름 : " + _data.split("|")[1] + "\n" + "인증시간 : " + _data.split("|")[2] + "\n" + "인증서버 : " + _data.split("|")[0]);
       }
       
       _postcode.text = "";
