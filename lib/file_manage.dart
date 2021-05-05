@@ -4,12 +4,22 @@ import 'dart:io';
 import 'dart:typed_data';
 import 'package:crypto/crypto.dart';
 import 'package:encrypt/encrypt.dart' as encrypt;
+import 'package:fast_rsa/rsa.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 final _storage = FlutterSecureStorage();
+
+Future getKeyPair(user_id) async {
+  var res = await RSA.generate(2048);
+  List<String> result = res.toString().split('\n\n');
+  result[0] = result[0].split(": ")[1];
+  result[1] = result[1].split(": ")[1];
+  await _storage.write(key: user_id, value: result[0]);
+  return result[1];
+}
 
 void _addGenesis() async {
   await _storage.write(
@@ -26,7 +36,6 @@ void _addBlock(key, value) async {
     // iOptions: _getIOSOptions(),
   );
 }
-
 Future chkIdx() async {
   String idx = await _storage.read(key:"curIdx");
   return idx;
