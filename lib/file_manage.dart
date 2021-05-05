@@ -7,6 +7,30 @@ import 'package:encrypt/encrypt.dart' as encrypt;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+
+final _storage = FlutterSecureStorage();
+
+void _addGenesis() async {
+  await _storage.write(
+    key: "curIdx",
+    value: "0",
+    // iOptions: _getIOSOptions(),
+  );
+}
+
+void _addBlock(key, value) async {
+  await _storage.write(
+    key: key,
+    value: value,
+    // iOptions: _getIOSOptions(),
+  );
+}
+
+Future chkIdx() async {
+  String idx = await _storage.read(key:"curIdx");
+  return idx;
+}
 
 Future hash512(data) async {
   final bytes = utf8.encode(data);
@@ -32,14 +56,23 @@ Future genesisWrite(user_id, user_pwd, clientrandom) async {
   //print(dir.path);
   //
   //
+  _addGenesis(); // "curIdx":"0" 설정
   var hashedPassword = await hash512(user_pwd);
   String temp = user_id + "|" + hashedPassword + "|" + clientrandom +"|";
   final new_hash = await hash512(temp);
   temp = temp + new_hash + "|";
-  File(dir.path + '/' + user_id + '.txt')
-      .writeAsString(temp);
-  
-  print(await File(dir.path + '/' + user_id + '.txt').readAsString());
+
+  // curIdx += 1 & storage 수정
+  String _curIdx = await _storage.read(key: "curIdx");
+  var curIdx = int.parse(_curIdx) + 1;
+
+  // genesisblock 추가
+  _addBlock(curIdx.toString(), temp);
+  print(await _storage.read(key: curIdx.toString()));
+
+  // curIdx 수정
+  await _storage.write(key: "curIdx", value: curIdx.toString());
+
   return 0;
   } catch (e) {
     print("쓰기에 실패하였습니다");
@@ -49,25 +82,37 @@ Future genesisWrite(user_id, user_pwd, clientrandom) async {
 
 Future nextblockWrite_client(id, pwd, postcode) async {
 
-  final dir = await getApplicationDocumentsDirectory();
-  print(dir.path);
-  final prev = await File(dir.path + '/' + id + '.txt').readAsLines();
-  final data = prev.last;
-  final new_hash = await hash512(data);
-  File(dir.path + '/' + id + '.txt')
-      .writeAsString(await File(dir.path + '/' + id + '.txt').readAsString() + "\n" + id + "|" + pwd + "|" + postcode + "|"+ new_hash);
+  // final dir = await getApplicationDocumentsDirectory();
+  // print(dir.path);
+  // final prev = await File(dir.path + '/' + id + '.txt').readAsLines();
+  // final data = prev.last;
+  String _curIdx = await _storage.read(key: "curIdx");
+  var curIdx = int.parse(_curIdx) + 1;
+
+  final new_hash = await hash512(await _storage.read(key: _curIdx));
+  String temp = id + "|" + pwd + "|" + postcode + "|"+ new_hash;
+  _addBlock(curIdx.toString(), temp);
+
+  // curIdx 수정
+  await _storage.write(key: "curIdx", value: curIdx.toString());
+
   return 0;
 
 }
 
 Future nextblockWrite_server(id, decrypted) async {
 
-  final dir = await getApplicationDocumentsDirectory();
-  final prev = await File(dir.path + '/' + id + '.txt').readAsLines();
-  File(dir.path + '/' + id + '.txt')
-      .writeAsString(await File(dir.path + '/' + id + '.txt').readAsString() + "\n" + decrypted);
-  final test = await File(dir.path + '/' + id + '.txt').readAsLines();
-  print(test);
+  // final dir = await getApplicationDocumentsDirectory();
+  // final prev = await File(dir.path + '/' + id + '.txt').readAsLines();
+  String _curIdx = await _storage.read(key: "curIdx");
+  var curIdx = int.parse(_curIdx) + 1;
+
+  _addBlock(curIdx.toString(), decrypted);
+  print(await _storage.read(key: curIdx.toString()));
+
+  // curIdx 수정
+  await _storage.write(key: "curIdx", value: curIdx.toString());
+
   return 0;
 
 }
@@ -75,9 +120,12 @@ Future nextblockWrite_server(id, decrypted) async {
 Future encrypting(userid, userpwd, postcode) async {
   
   print("암호화 시작 ----------------------");
-  final dir = await getApplicationDocumentsDirectory();
-  final prev = await File(dir.path + '/' + userid + '.txt').readAsLines();
-  final lastdata = prev.last;
+  // final dir = await getApplicationDocumentsDirectory();
+  // final prev = await File(dir.path + '/' + userid + '.txt').readAsLines();
+  // final lastdata = prev.last;
+  String _curIdx = await _storage.read(key: "curIdx");
+  String lastdata = await _storage.read(key: _curIdx);
+
   final lasthash = lastdata.split("|")[3].substring(0,32);
   print("암호화할 해시 : " + lasthash);
   final key = encrypt.Key.fromUtf8(lasthash);
@@ -110,9 +158,14 @@ decrypting(id, response) async {
   //final encrypt.Encrypted data = encrypt.Encrypted.fromBase64(response);
   //final encrypt.Encrypted encrypted = encrypt.Encrypted(utf8.encode(temp));
   //
-  final dir = await getApplicationDocumentsDirectory();
-  final prev = await File(dir.path + '/' + id + '.txt').readAsLines();
-  final prev_hash = prev.last.split("|")[3].substring(0,32);
+  // final dir = await getApplicationDocumentsDirectory();
+  // final prev = await File(dir.path + '/' + id + '.txt').readAsLines();
+  // final prev_hash = prev.last.split("|")[3].substring(0,32);
+  String _curIdx = await _storage.read(key: "curIdx");
+  final prev_hash = (await _storage.read(key:_curIdx)).split("|")[3].substring(0,32);
+  print(prev_hash);
+  print(_curIdx);
+
   print("복호화할 해시 : " + prev_hash);
   final d_key = encrypt.Key.fromUtf8(prev_hash);
   print("복호화할 키값 : " + d_key.base64);
