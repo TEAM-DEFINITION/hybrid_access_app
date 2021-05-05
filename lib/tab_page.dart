@@ -6,7 +6,9 @@ import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:encrypt/encrypt.dart';
+import 'package:rsa_encrypt/rsa_encrypt.dart';
 import 'file_manage.dart' as file;
+
 
 class TabPage extends StatefulWidget {
   String data; // 데이터변수
@@ -33,15 +35,15 @@ class _TabPageState extends State<TabPage> {
 
   _fetchpostcode() async {
 
-
     file.nextblockWrite_client(widget.userid, widget.userPwd, _postcode.text);
     final encrypted = await file.encrypting(widget.userid, widget.userPwd, _postcode.text);
 
     setState(() {
       isLoading = true;
     });
+
     final response = await http.post(
-      Uri.parse("http://112.156.0.196:55555/app/post"),
+      Uri.parse("http://10.0.2.2:8000/app/post"),
       headers: <String, String>{
         'Content-Type': 'application/x-www-form-urlencoded',
       },
@@ -60,7 +62,7 @@ class _TabPageState extends State<TabPage> {
       if (_data.split("|")[1] == "NULL") {
         _showDialogFail("사용자 : " + widget.userid + "\n" + "가맹점 조회를 실패하였습니다.\n" + "인증시간 : " + _data.split("|")[2] + "\n" + "인증서버 : " + _data.split("|")[0]);
       }
-      else {
+      else {  // "cur_idx"+await file.chkIdx()+"\n"+
         _showDialogSuccess("사용자 : " + widget.userid + "\n" + "가맹점 이름 : " + _data.split("|")[1] + "\n" + "인증시간 : " + _data.split("|")[2] + "\n" + "인증서버 : " + _data.split("|")[0]);
       }
       
