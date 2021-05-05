@@ -43,7 +43,7 @@ class _TabPageState extends State<TabPage> {
     });
 
     final response = await http.post(
-      Uri.parse("http://10.0.2.2:8000/app/post"),
+      Uri.parse("http://112.156.0.196:55555/app/post"),
       headers: <String, String>{
         'Content-Type': 'application/x-www-form-urlencoded',
       },
