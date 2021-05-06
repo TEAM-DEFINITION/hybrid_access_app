@@ -67,7 +67,7 @@ class _TabPageState extends State<TabPage> {
         _showDialogFail("사용자 : " + widget.userid + "\n" + "가맹점 조회를 실패하였습니다.\n" + "인증시간 : " + _data.split("|")[2] + "\n" + "인증서버 : " + _data.split("|")[0]);
       }
       else {  // "cur_idx"+await file.chkIdx()+"\n"+    "privateKey:"+keyPair[0]+'\n'+"사용자 : " + keyPair[1] +   +"사용자 : " +widget.userid
-        _showDialogSuccess("사용자 : "+"\n" + "가맹점 이름 : " + _data.split("|")[1] + "\n" + "인증시간 : " + _data.split("|")[2] + "\n" + "인증서버 : " + _data.split("|")[0]);
+        _showDialogSuccess("사용자 : " + widget.userid +"\n" + "가맹점 이름 : " + _data.split("|")[1] + "\n" + "인증시간 : " + _data.split("|")[2] + "\n" + "인증서버 : " + _data.split("|")[0]);
       }
       
       _postcode.text = "";
