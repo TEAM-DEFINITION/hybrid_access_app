@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:hybrid_access_app/signup_page.dart';
-import 'dart:convert';
-
 import 'package:hybrid_access_app/tab_page.dart';
-import 'file_manage.dart' as file;
 
 class LoginPage extends StatefulWidget {
   @override
@@ -23,8 +20,8 @@ class _LoginPageState extends State<LoginPage> {
       isLoading = true;
     });
     final response = await http.post(
-      Uri.parse("http://112.156.0.196:55555/app/login"),
-      // Uri.parse("http://10.0.2.2:8000/app/login"),
+      // Uri.parse("http://112.156.0.196:55555/app/login"),
+      Uri.parse("http://10.0.2.2:8000/app/login"),
       headers: <String, String> {
         'Content-Type': 'application/x-www-form-urlencoded',
       },
@@ -40,10 +37,10 @@ class _LoginPageState extends State<LoginPage> {
       if (response.body == "200") {
 
         Navigator.push(context, MaterialPageRoute(builder: (context) =>
-        TabPage(data:"로그인성공\n 이름 : "+_controller.text,
-                userid: _controller.text,
-                userPwd: _controller2.text,
-        )));
+            TabPage.init(data:"로그인성공\n 이름 : "+_controller.text,
+              userid: _controller.text,
+              userPwd: _controller2.text,
+            )));
 
       } else if (response.body == "401") {
 

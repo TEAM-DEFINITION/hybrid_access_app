@@ -31,8 +31,8 @@ class _SignUpState extends State<SignUp> {
       var publickey = await file.getKeyPair(_idcontroller.text);
 
       final response = await http.post(
-        Uri.parse("http://112.156.0.196:55555/app/signup"),
-        // Uri.parse("http://10.0.2.2:8000/app/signup"),
+        // Uri.parse("http://112.156.0.196:55555/app/signup"),
+        Uri.parse("http://10.0.2.2:8000/app/signup"),
         headers: <String, String> {
           'Content-Type': 'application/x-www-form-urlencoded',
         },

@@ -36,9 +36,25 @@ void _addBlock(key, value) async {
     // iOptions: _getIOSOptions(),
   );
 }
+
 Future chkIdx() async {
   String idx = await _storage.read(key:"curIdx");
   return idx;
+}
+
+// 현재 인덱스부터 정해진 길이만큼 리스트에 저장하여 return
+Future<List<String>> fetch() async {
+  List<String> entries = [];
+  int curidx = int.parse(await _storage.read(key:"curIdx"));
+  int lastidx = 1;
+  if (curidx >= 20){
+    lastidx = curidx - 20;
+  }
+  for(int i=curidx;i>lastidx;i-=2){	// 서버로부터 수신한 데이터 무시하기 위해 i-=2
+    List<String> data = (await _storage.read(key:i.toString())).split("|");
+    entries.add("장소 : " + data[1] + "\n일시 : " + data[2].split(".")[0]);
+  }
+  return entries;
 }
 
 Future hash512(data) async {
@@ -186,5 +202,5 @@ decrypting(id, response) async {
 
   nextblockWrite_server(id, decrypted);
   return decrypted;
-
 }
+
