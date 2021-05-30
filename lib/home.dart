@@ -13,13 +13,15 @@ import 'package:hybrid_access_app/home.dart';
 import 'package:hybrid_access_app/search.dart';
 import 'package:hybrid_access_app/account.dart';
 
+int count = 0;
+
 class Home extends StatefulWidget {
   String data; // 데이터변수
   String userid; // 데이터변수
   String userPwd; // 데이터변수
 
-  Home(){}
-  Home.init({ this.data, this.userid, this.userPwd}); // 데이터 생성자
+  Home() {}
+  Home.init({this.data, this.userid, this.userPwd}); // 데이터 생성자
 
   @override
   _HomeState createState() => _HomeState();
@@ -28,6 +30,7 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   final TextEditingController _postcode = TextEditingController();
 
+  // static int count = 0;
   bool isLoading = false;
 
   // load server_publicKey
@@ -38,7 +41,7 @@ class _HomeState extends State<Home> {
   _fetchpostcode() async {
     file.nextblockWrite_client(widget.userid, widget.userPwd, _postcode.text);
     final encrypted =
-    await file.encrypting(widget.userid, widget.userPwd, _postcode.text);
+        await file.encrypting(widget.userid, widget.userPwd, _postcode.text);
 
     setState(() {
       isLoading = true;
@@ -62,19 +65,27 @@ class _HomeState extends State<Home> {
       });
 
       final String _data = await file.decrypting(widget.userid, response.body);
+
       if (_data.split("|")[1] == "NULL") {
-        _showDialogFail("사용자 : " +
-            widget.userid +
-            "\n" +
-            "가맹점 조회를 실패하였습니다.\n" +
-            "인증시간 : " +
-            _data.split("|")[2] +
-            "\n" +
-            "인증서버 : " +
-            _data.split("|")[0]);
+        count += 1;
+        if (count >= 3) {
+          _showDialogFail("사용자 : " + widget.userid + "\n" + "회원탈퇴\n");
+          // SystemNavigator.pop();
+        } else {
+          _showDialogFail("사용자 : " +
+              widget.userid +
+              "\n" +
+              "가맹점 조회를 실패하였습니다.\n" +
+              "인증시간 : " +
+              _data.split("|")[2] +
+              "\n" +
+              "인증서버 : " +
+              _data.split("|")[0]);
+        }
       } else {
         // "cur_idx"+await file.chkIdx()+"\n"+    "privateKey:"+keyPair[0]+'\n'+"사용자 : " + keyPair[1] +   +"사용자 : " +widget.userid
-        _showDialogSuccess("사용자 : " + widget.userid +
+        _showDialogSuccess("사용자 : " +
+            widget.userid +
             "\n" +
             "가맹점 이름 : " +
             _data.split("|")[1] +
@@ -84,6 +95,7 @@ class _HomeState extends State<Home> {
             "\n" +
             "인증서버 : " +
             _data.split("|")[0]);
+        count = 0;
       }
 
       _postcode.text = "";
@@ -127,24 +139,24 @@ class _HomeState extends State<Home> {
                                     fontSize: 20, color: Colors.black))),
                         Flexible(
                             child: Container(
-                              padding: EdgeInsets.only(top: 5),
-                              margin: EdgeInsets.only(top: 13, right: 20),
-                              child: TextField(
-                                controller: _postcode,
-                                style: TextStyle(fontSize: 20, color: Colors.black),
-                                decoration: InputDecoration(
-                                    border: InputBorder.none,
-                                    hintText: "필수 입력",
-                                    hintStyle: TextStyle(color: Colors.grey[300]),
-                                    counterText: ''),
-                                cursorColor: Colors.blue,
-                                maxLength: 5,
-                                inputFormatters: [
-                                  FilteringTextInputFormatter.allow(RegExp('[0-9]'))
-                                  //WhitelistingTextInputFormatter(RegExp('[0-9]'))
-                                ],
-                              ),
-                            ))
+                          padding: EdgeInsets.only(top: 5),
+                          margin: EdgeInsets.only(top: 13, right: 20),
+                          child: TextField(
+                            controller: _postcode,
+                            style: TextStyle(fontSize: 20, color: Colors.black),
+                            decoration: InputDecoration(
+                                border: InputBorder.none,
+                                hintText: "필수 입력",
+                                hintStyle: TextStyle(color: Colors.grey[300]),
+                                counterText: ''),
+                            cursorColor: Colors.blue,
+                            maxLength: 5,
+                            inputFormatters: [
+                              FilteringTextInputFormatter.allow(RegExp('[0-9]'))
+                              //WhitelistingTextInputFormatter(RegExp('[0-9]'))
+                            ],
+                          ),
+                        ))
                       ],
                     )),
               ),
@@ -162,6 +174,7 @@ class _HomeState extends State<Home> {
       ),
     );
   }
+
   void _showDialogSuccess(data) {
     showDialog(
       context: context,
