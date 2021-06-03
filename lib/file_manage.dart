@@ -21,9 +21,9 @@ Future getKeyPair(user_id) async {
   return result[1];
 }
 
-void _addGenesis() async {
+void _addGenesis(user_id) async {
   await _storage.write(
-    key: "curIdx",
+    key: user_id+"_curIdx",
     value: "0",
     // iOptions: _getIOSOptions(),
   );
@@ -37,21 +37,31 @@ void _addBlock(key, value) async {
   );
 }
 
-Future chkIdx() async {
-  String idx = await _storage.read(key:"curIdx");
+Future chkIdx(user_id) async {
+  String idx = await _storage.read(key:user_id+"_curIdx");
   return idx;
 }
 
-// 현재 인덱스부터 정해진 길이만큼 리스트에 저장하여 return
-Future<List<String>> fetch() async {
+Future chkPlace(user_id) async {
+  String idx = await _storage.read(key: user_id+"_curIdx");
+  print(idx);
+  if (int.parse(idx)>=3) {
+    List<String> place = (await _storage.read(key: user_id+'_'+idx)).split("|");
+    return ("장소 : " + place[1] + "\n일시 : " + place[2].split(".")[0]);
+  } else{
+    return '방문이 필요합니다.';
+  }
+}
+
+Future<List<String>> fetch(user_id) async {
   List<String> entries = [];
-  int curidx = int.parse(await _storage.read(key:"curIdx"));
+  int curidx = int.parse(await _storage.read(key:user_id+"_curIdx"));
   int lastidx = 1;
   if (curidx >= 20){
     lastidx = curidx - 20;
   }
-  for(int i=curidx;i>lastidx;i-=2){	// 서버로부터 수신한 데이터 무시하기 위해 i-=2
-    List<String> data = (await _storage.read(key:i.toString())).split("|");
+  for(int i=curidx;i>lastidx;i-=2){
+    List<String> data = (await _storage.read(key:user_id+'_'+i.toString())).split("|");
     entries.add("장소 : " + data[1] + "\n일시 : " + data[2].split(".")[0]);
   }
   return entries;
@@ -81,22 +91,22 @@ Future genesisWrite(user_id, user_pwd, clientrandom) async {
   //print(dir.path);
   //
   //
-  _addGenesis(); // "curIdx":"0" 설정
+  _addGenesis(user_id); // "curIdx":"0" 설정
   var hashedPassword = await hash512(user_pwd);
   String temp = user_id + "|" + hashedPassword + "|" + clientrandom +"|";
   final new_hash = await hash512(temp);
   temp = temp + new_hash + "|";
 
   // curIdx += 1 & storage 수정
-  String _curIdx = await _storage.read(key: "curIdx");
+  String _curIdx = await _storage.read(key: user_id+"_curIdx");
   var curIdx = int.parse(_curIdx) + 1;
 
   // genesisblock 추가
-  _addBlock(curIdx.toString(), temp);
-  print(await _storage.read(key: curIdx.toString()));
+  _addBlock(user_id+'_'+curIdx.toString(), temp);
+  print(await _storage.read(key: user_id+'_'+curIdx.toString()));
 
   // curIdx 수정
-  await _storage.write(key: "curIdx", value: curIdx.toString());
+  await _storage.write(key: user_id+"_curIdx", value: curIdx.toString());
 
   return 0;
   } catch (e) {
@@ -111,15 +121,15 @@ Future nextblockWrite_client(id, pwd, postcode) async {
   // print(dir.path);
   // final prev = await File(dir.path + '/' + id + '.txt').readAsLines();
   // final data = prev.last;
-  String _curIdx = await _storage.read(key: "curIdx");
+  String _curIdx = await _storage.read(key: id+"_curIdx");
   var curIdx = int.parse(_curIdx) + 1;
 
-  final new_hash = await hash512(await _storage.read(key: _curIdx));
+  final new_hash = await hash512(await _storage.read(key: id+'_'+_curIdx));
   String temp = id + "|" + pwd + "|" + postcode + "|"+ new_hash;
-  _addBlock(curIdx.toString(), temp);
+  _addBlock(id+'_'+curIdx.toString(), temp);
 
   // curIdx 수정
-  await _storage.write(key: "curIdx", value: curIdx.toString());
+  await _storage.write(key: id+"_curIdx", value: curIdx.toString());
 
   return 0;
 
@@ -129,14 +139,14 @@ Future nextblockWrite_server(id, decrypted) async {
 
   // final dir = await getApplicationDocumentsDirectory();
   // final prev = await File(dir.path + '/' + id + '.txt').readAsLines();
-  String _curIdx = await _storage.read(key: "curIdx");
+  String _curIdx = await _storage.read(key: id+"_curIdx");
   var curIdx = int.parse(_curIdx) + 1;
 
-  _addBlock(curIdx.toString(), decrypted);
-  print(await _storage.read(key: curIdx.toString()));
+  _addBlock(id+'_'+curIdx.toString(), decrypted);
+  print(await _storage.read(key: id+'_'+curIdx.toString()));
 
   // curIdx 수정
-  await _storage.write(key: "curIdx", value: curIdx.toString());
+  await _storage.write(key: id+"_curIdx", value: curIdx.toString());
 
   return 0;
 
@@ -148,9 +158,11 @@ Future encrypting(userid, userpwd, postcode) async {
   // final dir = await getApplicationDocumentsDirectory();
   // final prev = await File(dir.path + '/' + userid + '.txt').readAsLines();
   // final lastdata = prev.last;
-  String _curIdx = await _storage.read(key: "curIdx");
-  String lastdata = await _storage.read(key: _curIdx);
-
+  String _curIdx = await _storage.read(key: userid+"_curIdx");
+  print(userid+"curIdx");
+  print(_curIdx);
+  String lastdata = await _storage.read(key: userid+'_'+_curIdx);
+  print(lastdata);
   final lasthash = lastdata.split("|")[3].substring(0,32);
   print("암호화할 해시 : " + lasthash);
   final key = encrypt.Key.fromUtf8(lasthash);
@@ -186,8 +198,9 @@ decrypting(id, response) async {
   // final dir = await getApplicationDocumentsDirectory();
   // final prev = await File(dir.path + '/' + id + '.txt').readAsLines();
   // final prev_hash = prev.last.split("|")[3].substring(0,32);
-  String _curIdx = await _storage.read(key: "curIdx");
-  final prev_hash = (await _storage.read(key:_curIdx)).split("|")[3].substring(0,32);
+  String _curIdx = await _storage.read(key: id+"_curIdx");
+  print(id+'_'+_curIdx);
+  final prev_hash = (await _storage.read(key:id+'_'+_curIdx)).split("|")[3].substring(0,32);
   print(prev_hash);
   print(_curIdx);
 
