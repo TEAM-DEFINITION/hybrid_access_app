@@ -2,8 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'file_manage.dart' as file;
 
-String visited = '0';
-String place = '';
+List<String> visited = [' '];
 
 class Account extends StatefulWidget {
   // String data; // 데이터변수
@@ -22,8 +21,7 @@ class _AccountState extends State<Account> {
   var index = 0;
 
   _chkInfo() async {
-    visited = ((int.parse(await file.chkIdx(widget.userid)) - 1) / 2).toInt().toString();
-    place = await file.chkPlace(widget.userid);
+    visited = await file.fetch(widget.userid, 1);
   }
 
   @override
@@ -75,11 +73,11 @@ class _AccountState extends State<Account> {
           // FlatButton.icon(onPressed: (){}, icon: Icon(Icons.mail), label: Text('Hire Me', style: TextStyle(color: Colors.white),),color: Colors.blue,shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),),
           ListTile(
             title: Text('방문횟수'),
-            subtitle: Text(visited),
+            subtitle: Text(visited[0]),
           ),
           ListTile(
             title: Text('최근 방문 장소'),
-            subtitle: Text(place),
+            subtitle: Text(visited[1]),
           ),
         ],
       );
