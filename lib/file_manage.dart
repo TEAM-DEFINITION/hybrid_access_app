@@ -37,40 +37,34 @@ void _addBlock(key, value) async {
   );
 }
 
-// Future chkIdx(user_id) async {
-//   String idx = await _storage.read(key:user_id+"_curIdx");
-//   return idx;
-// }
-//
-// Future chkPlace(user_id) async {
-//   String idx = await _storage.read(key: user_id+"_curIdx");
-//   print(idx);
-//   if (int.parse(idx)>=3) {
-//     List<String> place = (await _storage.read(key: user_id+'_'+idx)).split("|");
-//     return ("장소 : " + place[1] + "\n일시 : " + place[2].split(".")[0]);
-//   } else{
-//     return '방문이 필요합니다.';
-//   }
-// }
+Future chkIdx(user_id) async {
+  String idx = await _storage.read(key:user_id+"_curIdx");
+  return idx;
+}
 
-Future<List<String>> fetch(user_id, options) async {
+Future chkPlace(user_id) async {
+  String idx = await _storage.read(key: user_id+"_curIdx");
+  print(idx);
+  if (int.parse(idx)>=3) {
+    List<String> place = (await _storage.read(key: user_id+'_'+idx)).split("|");
+    return ("장소 : " + place[1] + "\n일시 : " + place[2].split(".")[0]);
+  } else{
+    return '방문이 필요합니다.';
+  }
+}
+
+Future<List<String>> fetch(user_id) async {
   List<String> entries = [];
   int curidx = int.parse(await _storage.read(key:user_id+"_curIdx"));
-  int cnt = 0;
-  String tmp;
-  while (curidx>=3){
-    List<String> data = (await _storage.read(key:user_id+'_'+curidx.toString())).split("|");
-    if (data[1]!='NULL'){
-      if (cnt==0){
-        tmp = "장소 : " + data[1] + "\n일시 : " + data[2].split(".")[0];
-      }
-      entries.add("장소 : " + data[1] + "\n일시 : " + data[2].split(".")[0]);
-      cnt += 1;
-    }
-    if (cnt>=20 && options==0) return entries;
-    curidx -= 2;
+  int lastidx = 1;
+  if (curidx >= 20){
+    lastidx = curidx - 20;
   }
-  return [cnt.toString(), tmp];
+  for(int i=curidx;i>lastidx;i-=2){
+    List<String> data = (await _storage.read(key:user_id+'_'+i.toString())).split("|");
+    entries.add("장소 : " + data[1] + "\n일시 : " + data[2].split(".")[0]);
+  }
+  return entries;
 }
 
 Future hash512(data) async {
@@ -147,11 +141,9 @@ Future nextblockWrite_server(id, decrypted) async {
   // final prev = await File(dir.path + '/' + id + '.txt').readAsLines();
   String _curIdx = await _storage.read(key: id+"_curIdx");
   var curIdx = int.parse(_curIdx) + 1;
-  String chkDecrypted = decrypted.toString().split('|')[1];
-
 
   _addBlock(id+'_'+curIdx.toString(), decrypted);
-  print('nextblockwrite '+curIdx.toString()+' '+await _storage.read(key: id+'_'+curIdx.toString()));
+  print(await _storage.read(key: id+'_'+curIdx.toString()));
 
   // curIdx 수정
   await _storage.write(key: id+"_curIdx", value: curIdx.toString());

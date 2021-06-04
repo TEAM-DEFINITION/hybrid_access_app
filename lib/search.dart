@@ -27,7 +27,7 @@ class _SearchState extends State<Search> {
     return null;
   }
   _fetch() async{
-    entries = await file.fetch(widget.userid, 0);
+    entries = await file.fetch(widget.userid);
   }
   @override
   Widget build(BuildContext context) {
